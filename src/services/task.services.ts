@@ -1,13 +1,13 @@
 import { prisma } from "../database/prisma";
-import { TTask, TTaskCreateSchema, TTaskUpdate } from "../schemas/task.schemas";
+import { TTaskReturn, TTaskCreateSchema, TTaskUpdate } from "../schemas/task.schemas";
 
 export class TaskServices {
-    async create(body: TTaskCreateSchema): Promise<TTask> {
+    async create(body: TTaskCreateSchema): Promise<TTaskReturn> {
         const data = await prisma.task.create({ data: body });
         return data;
     }
 
-    async findMany(): Promise<TTask[]> {
+    async findMany(): Promise<TTaskReturn[]> {
         const data = await prisma.task.findMany({
             include: {
                 category: true, 
@@ -16,7 +16,7 @@ export class TaskServices {
         return data;
     }
 
-    async findByCategory(categoryName: string): Promise<TTask[]> {
+    async findByCategory(categoryName: string): Promise<TTaskReturn[]> {
         const data = await prisma.task.findMany({
             where: {
                 category: {
@@ -32,17 +32,17 @@ export class TaskServices {
         return data;
     }    
 
-    async findOne(id: number): Promise<TTask> {
+    async findOne(id: number): Promise<TTaskReturn> {
         const data = await prisma.task.findFirst({
             where: { id },
             include: {
                 category: true, 
             },
         });
-        return data as TTask;
+        return data as TTaskReturn;
     }
 
-    async update(id: number, body: TTaskUpdate): Promise<TTask> {
+    async update(id: number, body: TTaskUpdate): Promise<TTaskReturn> {
         const data = await prisma.task.update({ where: { id }, data: body });
         return data;
     }

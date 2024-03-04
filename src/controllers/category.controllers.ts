@@ -6,7 +6,14 @@ export class CategoryController{
     async create(req: Request, res: Response){
         const categoryServices = new CategoryServices;
 
-        const response = await categoryServices.create(req.body);
+        const userId = res.locals.decode.id;
+
+        const categoryData = {
+            ...req.body,
+            userId: userId
+        };
+
+        const response = await categoryServices.create(categoryData);
 
         return res.status(201).json(response);
     }

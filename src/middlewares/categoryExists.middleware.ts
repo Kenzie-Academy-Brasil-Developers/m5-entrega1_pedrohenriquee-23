@@ -1,12 +1,8 @@
-import { Request as ExpressRequest, Response, NextFunction } from "express";
+import { Request, Response, NextFunction } from "express";
 import { prisma } from "../database/prisma";
 
-interface RequestWithCategory extends ExpressRequest {
-    category?: any; 
-}
-
 export const categoryExists = async (
-    req: RequestWithCategory, 
+    req: Request,
     res: Response,
     next: NextFunction
 ) => {
@@ -30,7 +26,7 @@ export const categoryExists = async (
         return res.status(404).json({ message: "Category not found" });
     }
 
-    req.category = category;
+    req.body.category = category;
 
     next();
 };

@@ -7,9 +7,9 @@ export class CategoryServices {
             const data = await prisma.category.create({ data: body });
             return data;
         } catch (error) {
-            // Tratamento de erro
+            
             console.error("Erro ao criar categoria:", error);
-            throw error; // Rejete o erro para quem chamou este método
+            throw error; 
         }
     }
 
@@ -17,9 +17,9 @@ export class CategoryServices {
         try {
             await prisma.category.delete({ where: { id } });
         } catch (error) {
-            // Tratamento de erro
+            
             console.error("Erro ao excluir categoria:", error);
-            throw error; // Rejete o erro para quem chamou este método
+            throw error; 
         }
     }
 }
