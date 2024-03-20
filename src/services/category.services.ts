@@ -1,26 +1,21 @@
 import { prisma } from "../database/prisma";
-import { TCategory, TCategoryCreate } from "../schemas/category.schemas";
+import { TCategorySchema, TCreateCategorySchema } from "../schemas/category.schemas";
 
-export class CategoryServices {
-    async create(body: TCategoryCreate): Promise<TCategory> {
-        try {
-            const data = await prisma.category.create({ data: body });
-            return data;
-        } catch (error) {
-            
-            console.error("Erro ao criar categoria:", error);
-            throw error; 
-        }
+export class CategoryService {
+    async create(userId: number, categoryData: TCreateCategorySchema): Promise<TCategorySchema> {
+        const createdCategory = await prisma.category.create({
+            data: {
+                ...categoryData,
+                user: { connect: { id: userId } }
+            },
+            include: { tasks: true }
+        });
+        return createdCategory;
     }
 
     async delete(id: number): Promise<void> {
-        try {
-            await prisma.category.delete({ where: { id } });
-        } catch (error) {
-            
-            console.error("Erro ao excluir categoria:", error);
-            throw error; 
-        }
+        await prisma.category.delete({
+            where: { id }
+        });
     }
 }
-

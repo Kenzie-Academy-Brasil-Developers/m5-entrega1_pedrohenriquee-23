@@ -1,53 +1,56 @@
 import { prisma } from "../database/prisma";
-import { TTaskReturn, TTaskCreateSchema, TTaskUpdate } from "../schemas/task.schemas";
+import { TCreateTaskSchema, TTaskSchema, TUpdateTaskSchema } from "../schemas/task.schemas";
 
-export class TaskServices {
-    async create(body: TTaskCreateSchema): Promise<TTaskReturn> {
-        const data = await prisma.task.create({ data: body });
-        return data;
-    }
-
-    async findMany(): Promise<TTaskReturn[]> {
-        const data = await prisma.task.findMany({
-            include: {
-                category: true, 
-            },
+export class TaskService {
+    async createTask(taskData: TCreateTaskSchema): Promise<TTaskSchema> {
+        const createdTask = await prisma.task.create({
+            data: taskData,
+            include: { category: true }
         });
-        return data;
+        return createdTask;
     }
 
-    async findByCategory(categoryName: string): Promise<TTaskReturn[]> {
-        const data = await prisma.task.findMany({
-            where: {
-                category: {
-                    name: {
-                        equals: categoryName.toLowerCase(), 
+    async getTasks(category?: string): Promise<TTaskSchema[]> {
+        if (category) {
+            const tasks = await prisma.task.findMany({
+                where: {
+                    category: {
+                        name: {
+                            equals: category.toLowerCase(),
+                        },
                     },
                 },
-            },
-            include: {
-                category: true, 
-            },
-        });
-        return data;
-    }    
+                include: { category: true }
+            });
+            return tasks;
+        } else {
+            const tasks = await prisma.task.findMany({
+                include: { category: true }
+            });
+            return tasks;
+        }
+    }
 
-    async findOne(id: number): Promise<TTaskReturn> {
-        const data = await prisma.task.findFirst({
+    async getTaskById(id: number): Promise<TTaskSchema | null> {
+        const task = await prisma.task.findUnique({
             where: { id },
-            include: {
-                category: true, 
-            },
+            include: { category: true }
         });
-        return data as TTaskReturn;
+        return task;
     }
 
-    async update(id: number, body: TTaskUpdate): Promise<TTaskReturn> {
-        const data = await prisma.task.update({ where: { id }, data: body });
-        return data;
+    async updateTask(id: number, taskData: TUpdateTaskSchema): Promise<TTaskSchema | null> {
+        const updatedTask = await prisma.task.update({
+            where: { id },
+            data: taskData,
+            include: { category: true }
+        });
+        return updatedTask;
     }
 
-    async delete(id: number): Promise<void> {
-        await prisma.task.delete({ where: { id } })
+    async deleteTask(id: number): Promise<void> {
+        await prisma.task.delete({
+            where: { id }
+        });
     }
 }

@@ -1,22 +1,26 @@
-import { z } from "zod"; 
+import { z } from 'zod';
 
-export const TaskSchema = z.object({
-    id: z.number().positive(),
-    title: z.string().min(1),
-    content: z.string().min(1),
-    finished: z.boolean().default(false),
-    categoryId: z.number().positive().nullable(),
-    userId: z.number().positive().nullable()
-})
+export const createTaskSchema = z.object({
+    title: z.string().min(3).max(255),
+    content: z.string().min(3),
+    categoryId: z.number().optional(),
+});
 
-export const taskCreateSchema = TaskSchema.omit({ id: true, categoryId:true });
+export const updateTaskSchema = z.object({
+    title: z.string().min(3).max(255).optional(),
+    content: z.string().min(3).optional(),
+    finished: z.boolean().optional(),
+    categoryId: z.number().optional(),
+});
 
-export const taskUpdateSchema = taskCreateSchema.partial();
+export const taskSchema = z.object({
+    id: z.number(),
+    title: z.string(),
+    content: z.string(),
+    finished: z.boolean(),
+    categoryId: z.number().nullable(),
+});
 
-export const taskReturnSchema = TaskSchema.omit({ id: true });
-
-export type TTaskReturn = z.infer<typeof taskReturnSchema>;
-
-export type TTaskCreateSchema = z.infer<typeof taskCreateSchema>;
-
-export type TTaskUpdate = z.infer<typeof taskUpdateSchema>;
+export type TCreateTaskSchema = z.infer<typeof createTaskSchema>;
+export type TUpdateTaskSchema = z.infer<typeof updateTaskSchema>;
+export type TTaskSchema = z.infer<typeof taskSchema>;

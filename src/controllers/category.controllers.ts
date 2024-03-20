@@ -1,28 +1,34 @@
-import { Request, Response } from "express";
-import { CategoryServices } from "../services/category.services";
+import { Request, Response } from 'express';
+import { CategoryService } from '../services/category.services';
+import { AppError } from '../errors/appError';
 
-
-export class CategoryController{
-    async create(req: Request, res: Response){
-        const categoryServices = new CategoryServices;
-
-        const userId = res.locals.decode.id;
-
-        const categoryData = {
-            ...req.body,
-            userId: userId
-        };
-
-        const response = await categoryServices.create(categoryData);
-
-        return res.status(201).json(response);
+export class CategoryController {
+    async create(req: Request, res: Response) {
+        const categoryService = new CategoryService();
+        try {
+            const userId = res.locals.decode.id;
+            const categoryData = {
+                ...req.body,
+                userId: userId
+            };
+            const category = await categoryService.create(res.locals.decode.id, categoryData);
+        } catch (error: any) { 
+            res.status(400).json({ message: error.message });
+        }
     }
 
-    async delete(req: Request, res: Response){
-        const categoryServices = new CategoryServices();
-
-        await categoryServices.delete(Number(req.params.id));
-
-        return res.status(204).json();
+    async delete(req: Request, res: Response) {
+        const categoryService = new CategoryService();
+        try {
+            const categoryId: number = parseInt(req.params.id);
+            await categoryService.delete(categoryId);
+            res.status(204).json();
+        } catch (error: any) { 
+            if (error instanceof AppError && error.statusCode === 403) {
+                res.status(403).json({ message: 'This user is not the category owner' });
+            } else {
+                res.status(404).json({ message: error.message });
+            }
+        }
     }
 }

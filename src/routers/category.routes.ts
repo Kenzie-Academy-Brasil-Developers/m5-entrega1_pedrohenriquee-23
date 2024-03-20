@@ -1,14 +1,12 @@
-import { Router } from "express";
-import { CategoryController } from "../controllers/category.controllers";
-import { ValidateBody } from "../middlewares/validateBody.middleware";
-import { categoryCreateSchema } from "../schemas/category.schemas";
-import { VerifyToken } from "../middlewares/verifyToken.middleware";
-import { checkOwnership } from "../middlewares/checkOwnership.middleware";
+import express from 'express';
+import { verifyToken } from '../middlewares/verifyToken.middleware';
+import { CategoryController } from '../controllers/category.controllers';
 
-const categoryRouter = Router();
-const categoryControllers = new CategoryController();
+const router = express.Router();
+const categoryController = new CategoryController();
 
-categoryRouter.post("/", VerifyToken.execute, ValidateBody.execute(categoryCreateSchema), categoryControllers.create);
-categoryRouter.delete("/:id", VerifyToken.execute, checkOwnership, categoryControllers.delete);
+router.post('/', verifyToken, categoryController.create);
 
-export default categoryRouter;
+router.delete('/:id', verifyToken, categoryController.delete);
+
+export default router;

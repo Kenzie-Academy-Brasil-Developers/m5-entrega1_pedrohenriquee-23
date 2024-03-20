@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from "express";
+import { NextFunction, Request, Response } from "express";
 import { prisma } from "../database/prisma";
 
 export const categoryExists = async (
@@ -21,7 +21,7 @@ export const categoryExists = async (
     }
 
     const category = await prisma.category.findUnique({ where: { id: categoryId } });
-    
+
     if (!category) {
         return res.status(404).json({ message: "Category not found" });
     }
